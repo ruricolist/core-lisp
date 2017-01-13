@@ -4,6 +4,7 @@
 
 (defpackage :core-lisp
   (:use :common-lisp)
+  #+sbcl (:lock t)
   (:shadow
    = /= >= <= > < + * -
    abs and append apply aref arithmetic-error-operands arithmetic-error-operation
