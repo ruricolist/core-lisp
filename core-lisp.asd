@@ -29,4 +29,5 @@ OTHER DEALINGS IN THE SOFTWARE.
   :components
   ((:file "core-lisp-packages")
    (:file "core-lisp-boot" :depends-on ("core-lisp-packages"))
-   (:file "core-lisp" :depends-on ("core-lisp-boot"))))
+   (:file "core-lisp" :depends-on ("core-lisp-boot")))
+  (:depends-on (:global-vars)))

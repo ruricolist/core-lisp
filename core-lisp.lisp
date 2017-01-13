@@ -41,14 +41,14 @@
   (assert (cl:null (cl:cdr form)))
   (cl:let ((alias (global name)))
     `(cl:progn
-       (defparameter ,alias ,(cl:car form))
+       (global-vars:define-global-parameter* ,alias ,(cl:car form))
        (import-variable ,name ,alias))))
 
 (defmacro defconstant (name &body form)
   (assert (cl:null (cl:cdr form)))
   (cl:let ((alias (global name)))
     `(cl:progn
-       (cl:defconstant ,alias ,(cl:car form))
+       (global-vars:define-global-var ,alias ,(cl:car form))
        (import-variable ,name ,alias))))
 
 (defmacro defun (&environment env name lambda-list &body body)
