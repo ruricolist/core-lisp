@@ -29,5 +29,6 @@ OTHER DEALINGS IN THE SOFTWARE.
   :components
   ((:file "core-lisp-packages")
    (:file "core-lisp-boot" :depends-on ("core-lisp-packages"))
-   (:file "core-lisp" :depends-on ("core-lisp-boot")))
-  (:depends-on (:global-vars)))
+   (:file "core-lisp" :depends-on ("core-lisp-boot"))
+   (:file "lang" :depends-on ("core-lisp")))
+  :depends-on (:overlord :global-vars :alexandria))

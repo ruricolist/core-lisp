@@ -98,7 +98,10 @@
    cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar cddadr cddar cdddar cddddr cdddr cddr
    
    in-package macroexpand macroexpand-1 macrolet symbol-macrolet
-   ))
+
+   ;; Overlord.
+
+   read-module module-progn))
 
 (defpackage :core-lisp-user
   (:use :core-lisp))
