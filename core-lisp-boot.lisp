@@ -14,6 +14,10 @@
                            (with-unique-names ,vars
                              `(let (,,@temps) ,,@body))))))
 
+(cl:defmacro eval-when (situations &body body)
+  `(cl:eval-when ,situations
+     ,@body))
+
 (defvar *core-lisp-global-package*
   (find-package "CORE-LISP-GLOBAL-DEFINITIONS"))
 

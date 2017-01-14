@@ -30,6 +30,9 @@
 
    caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar cadddr caddr cadr
    cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar cddadr cddar cdddar cddddr cdddr cddr
+
+   ;; Overlord
+   eval-when
    )
   (:export
    <arithmetic-error> <basic-array> <basic-vector> <built-in-class>
