@@ -23,10 +23,10 @@
 
 (cl:defgeneric global (name)
   (:method ((symbol cl:symbol))
-   (intern (cl:format cl:nil "~A::~S"
-                      (package-name (symbol-package symbol))
-                      symbol)
-           *core-lisp-global-package*))
+    (intern (cl:format cl:nil "~A::~A"
+                       (package-name (symbol-package symbol))
+                       (symbol-name symbol))
+            *core-lisp-global-package*))
   (:method ((name cl:cons))
    `(cl:setf ,(global (cl:cadr name)))))
 
