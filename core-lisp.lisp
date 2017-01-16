@@ -39,9 +39,14 @@
 
 (defmacro defglobal (name &body form)
   (assert (cl:null (cl:cdr form)))
-  (cl:let ((alias (global name)))
+  (cl:let ((alias (global name))
+           (defglobal
+               (cl:if (constantp form)
+                      ;; Use the compile-time version if the form is constant.
+                      'global-vars:define-global-parameter
+                      'global-vars:define-global-parameter*)))
     `(cl:progn
-       (global-vars:define-global-parameter* ,alias ,(cl:car form))
+       (,defglobal ,alias ,(cl:car form))
        (import-variable ,name ,alias))))
 
 (defmacro defconstant (name &body form)
