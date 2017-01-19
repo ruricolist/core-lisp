@@ -315,7 +315,7 @@
                   (declare (ignore ,@required-vars
                                    ,@(when body-var (cl:list body-var))
                                    ,@(when rest-var (cl:list rest-var))))
-                  (cl:funcall (macro-function ',falias ,new-env-var) ,new-whole-var ,new-env-var))
+                  (cl:funcall (cl:macro-function ',falias ,new-env-var) ,new-whole-var ,new-env-var))
                 (eval-when (:compile-toplevel :load-toplevel :execute)
                   (cl:setf (get ',fname '%function-aliases%) ',falias))
                 ',fname))))
@@ -323,7 +323,7 @@
       `(cl:progn
          (cl:defmacro ,fname (&whole ,whole-var &environment ,env-var &body ,body-var)
            (declare (ignore ,body-var))
-           (cl:funcall (macro-function ',falias ,env-var) ,whole-var ,env-var))
+           (cl:funcall (cl:macro-function ',falias ,env-var) ,whole-var ,env-var))
          (eval-when (:compile-toplevel :load-toplevel :execute)
            (cl:setf (get ',fname '%function-aliases%) ',falias)
            ',fname)))))

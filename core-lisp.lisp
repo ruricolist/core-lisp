@@ -207,6 +207,14 @@
            ((cl:and (cl:consp var) (cl:eq (cl:car var) 'lambda)) var)
            (cl:t `(cl:function ,var))))
 
+(cl:defun macro-function (var &optional env)
+  (cl:if (cl:symbolp var)
+         (cl:let ((alias (get-alias var '%function-aliases% env)))
+           (cl:if alias
+                  (cl:macro-function alias)
+                  (cl:macro-function var)))
+         (cl:macro-function var)))
+
 (import-function functionp cl:functionp (obj))
 (import-function apply cl:apply (function &rest args))
 (import-function funcall cl:funcall (function &rest args))

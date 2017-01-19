@@ -101,7 +101,7 @@
 
    ;; Overlord.
 
-   read-module module-progn))
+   read-module module-progn import macro-function))
 
 (defpackage :core-lisp-user
   (:use :core-lisp))
