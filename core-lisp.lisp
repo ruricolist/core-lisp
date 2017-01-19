@@ -206,10 +206,6 @@
                 `(cl:function ,var))))
            ((cl:and (cl:consp var) (cl:eq (cl:car var) 'lambda)) var)
            (cl:t `(cl:function ,var))))
-(cl:defun sharp-bang (stream sub-char numarg)
-  (declare (ignore sub-char numarg))
-  `(function ,(cl:read stream cl:t cl:nil cl:t)))
-(set-dispatch-macro-character #\# #\! #'sharp-bang)
 
 (import-function functionp cl:functionp (obj))
 (import-function apply cl:apply (function &rest args))
