@@ -4,12 +4,12 @@
 
 (cl:defun read-module (source stream)
   (cl:let* ((use-list (find-package :core-lisp))
-            (cl:*package* (overlord:ensure-file-package source :use-list use-list)))
-    (loop with eof = "eof"
-          for form = (cl:read stream nil eof)
-          until (cl:eq form eof)
-          collect form into forms
-          finally (return `(module-progn ,@forms)))))
+            (package (overlord:ensure-file-package source :use-list use-list))
+            (readtable (named-readtables:find-readtable 'core-lisp)))
+    `(module-progn
+       ,@(overlord:slurp-stream stream
+                                :readtable readtable
+                                :package package))))
 
 (cl:defmacro module-progn (&body body)
   ;; Variable-only at the moment.
