@@ -32,7 +32,7 @@
    cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar cddadr cddar cdddar cddddr cdddr cddr
 
    ;; Overlord
-   eval-when
+   eval-when macro-function import
    )
   (:export
    <arithmetic-error> <basic-array> <basic-vector> <built-in-class>

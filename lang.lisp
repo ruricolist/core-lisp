@@ -57,3 +57,27 @@
                                                          `(macro-function ',(second export)))))
                                collect `(setf (gethash ,key ,ht) ,form))
                        ,ht)))))))
+
+(defmacro import (m &rest args)
+  `(macrolet ((overlord/shadows:defmacro (name args &body body)
+                  (declare (ignore args body))
+                ;; ISLISP's defmacro supports neither &environment
+                ;; nor &whole nor even &body.
+                (let ((key (alexandria:make-keyword name))
+                      (env nil))
+                  `(defmacro ,name (&rest args)
+                     (list 'funcall
+                           '(overlord:module-ref* ,',m ',key)
+                           (list 'quote (cons ',name args))
+                           ,env))))
+              (overlord/shadows:defun (name args &body body)
+                  (list* 'defun name args body))
+              (overlord/shadows:defalias (name expr)
+                `(let ((fn ,expr))
+                   (defun ,name (&rest args)
+                     (apply fn args))))
+              (overlord/shadows:def (name init)
+                (list 'defglobal name init))
+              (overlord/shadows:define-symbol-macro (name expr)
+                (list 'define-symbol-macro name expr)))
+     (overlord:import ,m ,@args)))
