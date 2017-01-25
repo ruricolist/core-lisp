@@ -17,7 +17,7 @@
         finally (return package)))
 
 (cl:defun read-module (source stream)
-  (cl:let* ((use-list (find-package :core-lisp))
+  (cl:let* ((use-list (list (find-package :core-lisp)))
             (package (overlord:reset-file-package source :use-list use-list))
             (readtable (named-readtables:find-readtable 'core-lisp)))
     (reset-package-globals package)
