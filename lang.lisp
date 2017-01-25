@@ -2,10 +2,25 @@
 
 (cl:defparameter *compile-top-level* t)
 
+(cl:defun package-globals (package)
+  (cl:let* ((package-name (package-name package))
+            (prefix (format nil "~a::" package-name)))
+    (loop for sym being the present-symbols of *core-lisp-global-package*
+          for name = (symbol-name sym)
+          when (serapeum:string^= prefix name)
+            collect sym)))
+
+(cl:defun reset-package-globals (package)
+  (loop with global-package = *core-lisp-global-package*
+        for sym in (package-globals package)
+        do (unintern sym global-package)
+        finally (return package)))
+
 (cl:defun read-module (source stream)
   (cl:let* ((use-list (find-package :core-lisp))
-            (package (overlord:ensure-file-package source :use-list use-list))
+            (package (overlord:reset-file-package source :use-list use-list))
             (readtable (named-readtables:find-readtable 'core-lisp)))
+    (reset-package-globals package)
     `(module-progn
        ,@(overlord:slurp-stream stream
                                 :readtable readtable
@@ -28,7 +43,6 @@
               (remove-if (lambda (form)
                            (member form meta-forms))
                          body))
-
             (exports
               (loop for form in export-forms
                     append (rest form)))
