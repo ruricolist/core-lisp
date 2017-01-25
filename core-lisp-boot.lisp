@@ -225,15 +225,15 @@
 
 (cl:defmacro -import-variable- (name alias)
   `(cl:progn
-     (define-symbol-macro ,name ,alias)
      (eval-when (:compile-toplevel :load-toplevel :execute)
+       (define-symbol-macro ,name ,alias)
        (cl:setf (get ',name '%aliases%) ',alias)
        ',name)))
 
 (cl:defmacro -import-symbol-macro- (name alias)
   `(cl:progn
-     (define-symbol-macro ,name ,alias)
      (eval-when (:compile-toplevel :load-toplevel :execute)
+       (define-symbol-macro ,name ,alias)
        (cl:setf (get ',name '%aliases%) ',alias)
        ',name)))
 
