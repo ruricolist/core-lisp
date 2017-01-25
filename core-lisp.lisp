@@ -46,15 +46,15 @@
                       'global-vars:define-global-parameter
                       'global-vars:define-global-parameter*)))
     `(cl:progn
-       (,defglobal ,alias ,(cl:car form))
-       (import-variable ,name ,alias))))
+       (import-variable ,name ,alias)
+       (,defglobal ,alias ,(cl:car form)))))
 
 (defmacro defconstant (name &body form)
   (assert (cl:null (cl:cdr form)))
   (cl:let ((alias (global name)))
     `(cl:progn
-       (global-vars:define-global-var ,alias ,(cl:car form))
-       (import-variable ,name ,alias))))
+       (import-variable ,name ,alias)
+       (global-vars:define-global-var ,alias ,(cl:car form)))))
 
 (defmacro defun (&environment env name lambda-list &body body)
   (cl:let ((function-alias (global name)))

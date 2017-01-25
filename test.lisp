@@ -51,6 +51,12 @@
   (handler-bind ((warning #'muffle-warning))
     (is (equal '(4 6 :ERROR 4 16 :ERROR) (require-as nil #1#)))))
 
+(test islisp-globals-can-close
+  "Test that globals defined with `defglobal' close over themselves."
+  (touch #1="test/globals-can-close.lsp")
+  (with-imports (m :from #1# :binding (x))
+    (is (eql x (funcall x)))))
+
 (test islisp-phasing
   "Test that state is not preserved across rebuilds."
   (touch #1="test/phasing.lsp")
