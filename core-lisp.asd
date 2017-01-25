@@ -1,9 +1,10 @@
 (asdf:defsystem #:core-lisp
   :name "Core Lisp"
   :author "Pascal Costanza"
-  :version "0.1"
+  :maintainer "Paul M. Rodriguez <pmr@ruricolist.com>"
   :licence "
 Copyright (c) 2009 Pascal Costanza
+Copyright (c) 2017 Paul M. Rodriguez
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -32,4 +33,11 @@ OTHER DEALINGS IN THE SOFTWARE.
    (:file "core-lisp" :depends-on ("core-lisp-boot"))
    (:file "readtable" :depends-on ("core-lisp-packages"))
    (:file "lang" :depends-on ("core-lisp")))
-  :depends-on (:overlord :global-vars :alexandria :named-readtables))
+  :depends-on (:overlord :global-vars :alexandria :named-readtables)
+  :in-order-to ((asdf:test-op (asdf:test-op #:core-lisp/test))))
+
+(asdf:defsystem #:core-lisp/test
+  :depends-on (:core-lisp :overlord :uiop :fiveam)
+  :perform (asdf:test-op (o c) (uiop:symbol-call :core-lisp/test :run-tests))
+  :components
+  ((:file "test")))
