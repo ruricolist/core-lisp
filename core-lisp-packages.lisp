@@ -89,9 +89,10 @@
 
    alias function-alias block-alias tag-alias
 
-   import-variable import-symbol-macro import-function import-macro
-   with-imported-variables with-imported-symbol-macros
-   with-imported-functions with-imported-macros with-imported-block
+   ;; Disabled in favor of overlord:import.
+   ;; import-variable import-symbol-macro import-function import-macro
+   ;; with-imported-variables with-imported-symbol-macros
+   ;; with-imported-functions with-imported-macros with-imported-block
 
    &body &environment &whole
    caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar cadddr caddr cadr
