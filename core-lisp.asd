@@ -1,6 +1,7 @@
 (asdf:defsystem #:core-lisp
   :name "Core Lisp"
   :author "Pascal Costanza"
+  :description "Hygiene-compatible Lisp dialect embedded in CL."
   :maintainer "Paul M. Rodriguez <pmr@ruricolist.com>"
   :licence "
 Copyright (c) 2009 Pascal Costanza
