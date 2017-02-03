@@ -20,6 +20,8 @@
   (cl:let* ((use-list (list (find-package :core-lisp)))
             (package (overlord:reset-file-package source :use-list use-list))
             (readtable (named-readtables:find-readtable 'core-lisp)))
+    ;; I can't come up with an example where this could matter, but
+    ;; it's probably better to start clean.
     (reset-package-globals package)
     `(module-progn
        ,@(overlord:slurp-stream stream
