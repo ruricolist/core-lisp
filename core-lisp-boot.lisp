@@ -330,23 +330,26 @@
 
 (cl:defmacro -with-imported-variables- ((&rest bindings) &body body &environment env)
   (cl:let ((old-aliases (macroexpand '%aliases% env)))
-    `(symbol-macrolet ((%aliases% ,(revappend bindings old-aliases)))
-       (declare (ignorable %aliases%))
-       (symbol-macrolet ,bindings ,@body))))
+    `(locally (declare #+sbcl (sb-ext:disable-package-locks %aliases%))
+       (symbol-macrolet ((%aliases% ,(revappend bindings old-aliases)))
+         (declare (ignorable %aliases%))
+         (symbol-macrolet ,bindings ,@body)))))
 
 (cl:defmacro -with-imported-symbol-macros- ((&rest bindings) &body body &environment env)
   (cl:let ((old-aliases (macroexpand '%aliases% env)))
-    `(symbol-macrolet ((%aliases% ,(revappend bindings old-aliases)))
-       (declare (ignorable %aliases%))
-       (symbol-macrolet ,bindings ,@body))))
+    `(locally (declare #+sbcl (sb-ext:disable-package-locks %aliases%))
+       (symbol-macrolet ((%aliases% ,(revappend bindings old-aliases)))
+         (declare (ignorable %aliases%))
+         (symbol-macrolet ,bindings ,@body)))))
 
 (cl:defmacro -with-imported-functions- ((&rest bindings) &body body &environment env)
   (cl:let ((old-aliases (macroexpand '%function-aliases% env)))
-    `(symbol-macrolet ((%function-aliases% ,(revappend bindings old-aliases)))
-       (declare (ignorable %function-aliases%))
-       (cl:macrolet ,(loop for (fun alias) in bindings
-                           collect `(,fun (&rest args) `(,',alias ,@args)))
-         ,@body))))
+    `(locally (declare #+sbcl (sb-ext:disable-package-locks %function-aliases%))
+       (symbol-macrolet ((%function-aliases% ,(revappend bindings old-aliases)))
+         (declare (ignorable %function-aliases%))
+         (cl:macrolet ,(loop for (fun alias) in bindings
+                             collect `(,fun (&rest args) `(,',alias ,@args)))
+           ,@body)))))
 
 (cl:defvar -arguments-for-local-macros-)
 
@@ -355,17 +358,19 @@
 
 (cl:defmacro -with-imported-macros- ((&rest bindings) &body body &environment env)
   (cl:let ((old-aliases (macroexpand '%function-aliases% env)))
-    `(symbol-macrolet ((%function-aliases% ,(revappend bindings old-aliases)))
-       (declare (ignorable %function-aliases%))
-       (cl:macrolet ,(loop for (macro alias) in bindings
-                           collect `(,macro (&rest -arguments-for-local-macros-) (expand-local-macro ,alias)))
-         ,@body))))
+    `(locally (declare #+sbcl (sb-ext:disable-package-locks %function-aliases%))
+       (symbol-macrolet ((%function-aliases% ,(revappend bindings old-aliases)))
+         (declare (ignorable %function-aliases%))
+         (cl:macrolet ,(loop for (macro alias) in bindings
+                             collect `(,macro (&rest -arguments-for-local-macros-) (expand-local-macro ,alias)))
+           ,@body)))))
 
 (cl:defmacro -with-imported-block- ((block-name block-alias) &body body &environment env)
   (cl:let ((old-aliases (macroexpand '%block-aliases% env)))
     `(cl:block ,block-name
-       (symbol-macrolet ((%block-aliases% ,(cl:cons `(,block-name ,block-alias) old-aliases)))
-         ,@body))))
+       (locally (declare #+sbcl (sb-ext:disable-package-locks %block-aliases%))
+         (symbol-macrolet ((%block-aliases% ,(cl:cons `(,block-name ,block-alias) old-aliases)))
+           ,@body)))))
 
 (cl:defmacro -defmacro- (macro-name lambda-list &body body)
   (cl:let ((macro-alias (global macro-name)))
@@ -378,9 +383,10 @@
          (-import-macro- ,macro-name ,macro-alias ,lambda-list)))))
 
 (cl:defun expand-body (new-aliases old-aliases body)
-  `(symbol-macrolet ((%aliases% ,(revappend new-aliases old-aliases)))
-     (declare (ignorable %aliases%))
-     (symbol-macrolet ,new-aliases ,@body)))
+  `(locally (declare #+sbcl (sb-ext:disable-package-locks %aliases%))
+     (symbol-macrolet ((%aliases% ,(revappend new-aliases old-aliases)))
+      (declare (ignorable %aliases%))
+      (symbol-macrolet ,new-aliases ,@body))))
 
 (cl:defun process-lambda (env lambda-list body)
   (cl:let ((old-aliases (macroexpand '%aliases% env)))
