@@ -295,7 +295,8 @@
 
 (defgeneric create (class &rest initargs)
   (:method (class &rest initargs)
-   (declare (dynamic-extent initargs))
+   ;; SBCL balks at dynamic extent for a symbol macro.
+   ;; (declare (dynamic-extent initargs))
    (cl:if (subtypep class (load-time-value (find-class 'condition)))
      (cl:apply #'make-condition class initargs)
      (cl:apply #'make-instance class initargs))))
