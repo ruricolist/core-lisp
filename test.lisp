@@ -60,6 +60,7 @@
 (test islisp-phasing
   "Test that state is not preserved across rebuilds."
   (touch #1="test/phasing.lsp")
+  (overlord:require-as :core-lisp #1#)
   (with-imports (m :from #1# :binding (#'inc-count))
     (is (= (inc-count) 0))))
 
