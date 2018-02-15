@@ -46,33 +46,34 @@
                            (member form meta-forms))
                          body))
             (exports
-              (loop for form in export-forms
-                    append (rest form)))
-            (default-export
-              (second export-default-form)))
+              (append
+               (loop for form in export-forms
+                     append (rest form))
+               (and export-default-form
+                    `((:default ,(second export-default-form)))))))
     (assert (not (and export-forms export-default-form)))
     `(progn
        ,@body
        (setq overlord/specials:*module*
-             ,(if export-default-form
-                  default-export
-                  (with-unique-names (ht)
-                    `(let ((,ht (make-hash-table)))
-                       ,@(loop for export in exports
-                               for (key form) = (etypecase export
-                                                  (cl:symbol
-                                                   (list (alexandria:make-keyword export)
-                                                         export))
-                                                  ((cl:cons (cl:eql function)
-                                                            (cl:cons symbol cl:null))
-                                                   (list (alexandria:make-keyword (second export))
-                                                         `(function ,(second export))))
-                                                  ((cl:cons (cl:eql macro-function)
-                                                            (cl:cons symbol cl:null))
-                                                   (list (alexandria:make-keyword (second export))
-                                                         `(macro-function ',(second export)))))
-                               collect `(setf (gethash ,key ,ht) ,form))
-                       ,ht)))))))
+             ,(with-unique-names (ht)
+                `(let ((,ht (make-hash-table)))
+                   ,@(loop for export in exports
+                           for (key form) = (etypecase export
+                                              (cl:symbol
+                                               (list (alexandria:make-keyword export)
+                                                     export))
+                                              ((cl:cons (cl:eql function)
+                                                        (cl:cons symbol cl:null))
+                                               (list (alexandria:make-keyword (second export))
+                                                     `(function ,(second export))))
+                                              ((cl:cons (cl:eql macro-function)
+                                                        (cl:cons symbol cl:null))
+                                               (list (alexandria:make-keyword (second export))
+                                                     `(macro-function ',(second export))))
+                                              ((cl:cons (cl:eql :default) (cl:cons cl:t cl:null))
+                                               (list (first export) (second export))))
+                           collect `(setf (gethash ,key ,ht) ,form))
+                   ,ht))))))
 
 (defmacro import (m &rest args)
   `(macrolet ((overlord/shadows:defmacro (name args &body body)
