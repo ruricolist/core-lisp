@@ -18,15 +18,15 @@
 
 (cl:defun read-module (source stream)
   (cl:let* ((use-list (list (find-package :core-lisp)))
-            (package (overlord:reset-file-package source :use-list use-list))
+            (package (vernacular:reset-file-package source :use-list use-list))
             (readtable (named-readtables:find-readtable 'core-lisp)))
     ;; I can't come up with an example where this could matter, but
     ;; it's probably better to start clean.
     (reset-package-globals package)
     `(module-progn
-       ,@(overlord:slurp-stream stream
-                                :readtable readtable
-                                :package package))))
+       ,@(vernacular:slurp-stream stream
+                                  :readtable readtable
+                                  :package package))))
 
 (cl:defmacro module-progn (&body body)
   ;; Variable-only at the moment.
@@ -54,7 +54,7 @@
     (assert (not (and export-forms export-default-form)))
     `(progn
        ,@body
-       (setq overlord/specials:*module*
+       (setq vernacular/specials:*module*
              ,(with-unique-names (ht)
                 `(let ((,ht (make-hash-table)))
                    ,@(loop for export in exports
@@ -76,7 +76,7 @@
                    ,ht))))))
 
 (defmacro import (m &rest args)
-  `(macrolet ((overlord/shadows:defmacro (name args &body body)
+  `(macrolet ((vernacular/cl:defmacro (name args &body body)
                   (declare (ignore args body))
                 ;; ISLISP's defmacro supports neither &environment
                 ;; nor &whole nor even &body.
@@ -84,17 +84,17 @@
                       (env nil))
                   `(defmacro ,name (&rest args)
                      (list 'funcall
-                           '(overlord:module-ref* ,',m ',key)
+                           '(vernacular:module-ref* ,',m ',key)
                            (list 'quote (cons ',name args))
                            ,env))))
-              (overlord/shadows:defun (name args &body body)
+              (vernacular/cl:defun (name args &body body)
                   (list* 'defun name args body))
-              (overlord/shadows:defalias (name expr)
+              (vernacular/cl:defalias (name expr)
                 `(let ((fn ,expr))
                    (defun ,name (&rest args)
                      (apply fn args))))
-              (overlord/shadows:def (name init)
+              (vernacular/cl:def (name init)
                 (list 'defglobal name init))
-              (overlord/shadows:define-symbol-macro (name expr)
+              (vernacular/cl:define-symbol-macro (name expr)
                 (list 'define-symbol-macro name expr)))
-     (overlord:import ,m ,@args)))
+     (vernacular:import ,m ,@args)))

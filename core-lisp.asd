@@ -34,5 +34,4 @@ OTHER DEALINGS IN THE SOFTWARE.
    (:file "core-lisp" :depends-on ("core-lisp-boot"))
    (:file "readtable" :depends-on ("core-lisp-packages"))
    (:file "lang" :depends-on ("core-lisp")))
-  :depends-on (:overlord :global-vars :alexandria :named-readtables)
-  :in-order-to ((asdf:test-op (asdf:test-op #:overlord-tests))))
+  :depends-on (:vernacular :global-vars :alexandria :named-readtables))

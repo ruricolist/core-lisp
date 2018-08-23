@@ -31,7 +31,7 @@
    caaaar caaadr caaar caadar caaddr caadr caar cadaar cadadr cadar caddar cadddr caddr cadr
    cdaaar cdaadr cdaar cdadar cdaddr cdadr cdar cddaar cddadr cddar cdddar cddddr cdddr cddr
 
-   ;; Overlord
+   ;; Vernacular
    eval-when macro-function import
    )
   (:export
@@ -89,7 +89,7 @@
 
    alias function-alias block-alias tag-alias
 
-   ;; Disabled in favor of overlord:import.
+   ;; Disabled in favor of vernacular:import.
    ;; import-variable import-symbol-macro import-function import-macro
    ;; with-imported-variables with-imported-symbol-macros
    ;; with-imported-functions with-imported-macros with-imported-block
@@ -100,7 +100,7 @@
    
    in-package macroexpand macroexpand-1 macrolet symbol-macrolet
 
-   ;; Overlord.
+   ;; Vernacular.
 
    read-module module-progn import macro-function))
 
