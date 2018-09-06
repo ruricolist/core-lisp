@@ -215,7 +215,7 @@
            (cl:if alias
                   (cl:macro-function alias)
                   (cl:macro-function var)))
-         (cl:macro-function var)))
+         (cl:error "Not a symbol: ~a" var)))
 
 (import-function functionp cl:functionp (obj))
 (import-function apply cl:apply (function &rest args))
