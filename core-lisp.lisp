@@ -63,10 +63,10 @@
     (multiple-value-bind
         (new-lambda-list new-body)
         (process-lambda env lambda-list body)
-      `(cl:progn
-         (cl:defun ,function-alias ,new-lambda-list ,new-body)
-         (import-function ,name ,function-alias ,lambda-list)))))
-
+       `(cl:progn
+               (import-function ,name ,function-alias ,lambda-list)
+               (cl:defun ,function-alias ,new-lambda-list ,new-body)))))
+         
 (defmacro defgeneric (&whole w &environment env name lambda-list &body options)
   (unless (every #'cl:consp options)
     (cl:error "Illegal options in DEFGENERIC form: ~S." w))
