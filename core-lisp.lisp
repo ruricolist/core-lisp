@@ -311,10 +311,11 @@
 (defmacro the (class-name form) `(cl:the ,class-name ,form))
 
 (defmacro assure (class-name form)
-  (rebinding (form)
-    `(cl:progn
-       (check-type ,form ,class-name)
-       ,form)))
+   (rebinding (form)
+              `(cl:progn
+                      (assert (typep ,form (find-class ',class-name)) (,form)
+                              'type-error :datum ,form :expected-type ',class-name)
+                      ,form)))
 
 (cl:defgeneric convert-function (obj type)
   (:method ((obj character) (type (cl:eql '<character>))) obj)
