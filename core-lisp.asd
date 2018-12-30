@@ -34,4 +34,11 @@ OTHER DEALINGS IN THE SOFTWARE.
    (:file "core-lisp" :depends-on ("core-lisp-boot"))
    (:file "readtable" :depends-on ("core-lisp-packages"))
    (:file "lang" :depends-on ("core-lisp")))
+  :in-order-to ((asdf:test-op (asdf:test-op #:core-lisp/test)))
   :depends-on (:vernacular :global-vars :alexandria :named-readtables))
+
+(asdf:defsystem #:core-lisp/test
+  :depends-on (:core-lisp :overlord :uiop :fiveam)
+  :perform (asdf:test-op (o c) (uiop:symbol-call :core-lisp/test :run-tests))
+  :components
+  ((:file "test")))

@@ -63,10 +63,10 @@
     (multiple-value-bind
         (new-lambda-list new-body)
         (process-lambda env lambda-list body)
-      `(cl:progn
-         (cl:defun ,function-alias ,new-lambda-list ,new-body)
-         (import-function ,name ,function-alias ,lambda-list)))))
-
+       `(cl:progn
+          (import-function ,name ,function-alias ,lambda-list)
+          (cl:defun ,function-alias ,new-lambda-list ,new-body)))))
+         
 (defmacro defgeneric (&whole w &environment env name lambda-list &body options)
   (unless (every #'cl:consp options)
     (cl:error "Illegal options in DEFGENERIC form: ~S." w))
@@ -313,7 +313,8 @@
 (defmacro assure (class-name form)
   (rebinding (form)
     `(cl:progn
-       (check-type ,form ,class-name)
+       (assert (typep ,form (find-class ',class-name)) (,form)
+               'type-error :datum ,form :expected-type ',class-name)
        ,form)))
 
 (cl:defgeneric convert-function (obj type)
@@ -396,7 +397,8 @@
 (import-function truncate cl:truncate (x))
 (import-function round cl:round (x))
 (import-function integerp cl:integerp (x))
-(import-function div cl:floor (z1 z2))
+(defun div (z1 z2)
+   (values (cl:floor z1 z2)))
 (import-function mod cl:mod (z1 z2))
 (import-function gcd cl:gcd (z1 z2))
 (import-function lcm cl:lcm (z1 z2))
