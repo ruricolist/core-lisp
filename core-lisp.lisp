@@ -64,8 +64,8 @@
         (new-lambda-list new-body)
         (process-lambda env lambda-list body)
        `(cl:progn
-               (import-function ,name ,function-alias ,lambda-list)
-               (cl:defun ,function-alias ,new-lambda-list ,new-body)))))
+          (import-function ,name ,function-alias ,lambda-list)
+          (cl:defun ,function-alias ,new-lambda-list ,new-body)))))
          
 (defmacro defgeneric (&whole w &environment env name lambda-list &body options)
   (unless (every #'cl:consp options)
@@ -311,11 +311,11 @@
 (defmacro the (class-name form) `(cl:the ,class-name ,form))
 
 (defmacro assure (class-name form)
-   (rebinding (form)
-              `(cl:progn
-                      (assert (typep ,form (find-class ',class-name)) (,form)
-                              'type-error :datum ,form :expected-type ',class-name)
-                      ,form)))
+  (rebinding (form)
+    `(cl:progn
+       (assert (typep ,form (find-class ',class-name)) (,form)
+               'type-error :datum ,form :expected-type ',class-name)
+       ,form)))
 
 (cl:defgeneric convert-function (obj type)
   (:method ((obj character) (type (cl:eql '<character>))) obj)
