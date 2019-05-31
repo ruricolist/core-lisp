@@ -1,0 +1,26 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros +Q -L sbcl-bin -- $0 "$@"
+|#
+
+(ql:quickload '(:core-lisp) :silent t)
+
+(defun repl ()
+  (tagbody
+     (format t "This is Core Lisp, an implementation of ISLISP.~%
+Copyright (c) 2009 Pascal Costanza.~%
+Copyright (c) 2017 Paul M. Rodriguez.~%")
+     (restart-case
+         (let ((*package* (find-package :core-lisp-user)))
+           (loop
+              (format t "~%~a> " *package-name*) ;Prompt.
+              (eval (read))))
+       (quit ()
+         :report "Quit the ISLISP REPL."
+         (go :quit)))
+   :quit))
+
+(defun main (&rest args)
+  (declare (ignore args))
+  (repl))
