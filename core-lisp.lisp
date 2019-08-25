@@ -209,6 +209,11 @@
            ((cl:and (cl:consp var) (cl:eq (cl:car var) 'lambda)) var)
            (cl:t `(cl:function ,var))))
 
+(cl:defun symbol-function (var &optional env)
+  (cl:symbol-function
+   (or (get-alias var '%function-aliases% env)
+       var)))
+
 (cl:defun macro-function (var &optional env)
   (cl:if (cl:symbolp var)
          (cl:let ((alias (get-alias var '%function-aliases% env)))

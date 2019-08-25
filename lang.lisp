@@ -28,6 +28,30 @@
                                   :readtable readtable
                                   :package package))))
 
+(cl:defclass core-lisp-module ()
+  ((package :initarg :package :type package)))
+
+(defun find-external-symbol (name package)
+  (setf name (string name))
+  (or (serapeum:find-external-symbol name package)
+      (cl:error "No symbol named ~a exported from ~s." name package)))
+
+(serapeum:defmethods core-lisp-module (self package)
+  (:method vernacular:module-exports (self)
+    (serapeum:package-exports package))
+  (:method vernacular:module-ref (self name)
+    (vernacular:module-ref-ns self name nil))
+  (:method vernacular:module-ref-ns (self name (ns cl:null))
+    (let* ((sym (find-external-symbol name package))
+           (alias (or (get-alias sym '%aliases% nil)
+                      sym)))
+      ;; Should we shadow symbol-value?
+      (symbol-value alias)))
+  (:method vernacular:module-ref-ns (self name (ns (cl:eql 'cl:function)))
+    (symbol-function (find-external-symbol name package)))
+  (:method vernacular:module-ref-ns (self name (ns (cl:eql 'cl:macro-function)))
+    (macro-function (find-external-symbol name package))))
+
 (cl:defmacro module-progn (&body body)
   ;; Variable-only at the moment.
   (cl:let* ((export-forms
@@ -55,8 +79,8 @@
     (with-unique-names (source pkg)
       `(progn
          ,@body
-         (setq vernacular/specials:*module*
-               (cl:let* ((,source ,vernacular/specials:*source*)
+         (setq vernacular:*module*
+               (cl:let* ((,source ,vernacular:*source*)
                          (,pkg (vernacular:ensure-file-package ,source))
                          (*package* ,pkg))
                  ,@(loop for export in exports
@@ -71,9 +95,9 @@
                                    ((cl:cons (cl:eql :default) (cl:cons cl:t cl:null))
                                     (with-unique-names (sym)
                                       `(cl:let ((,sym (intern ,(string 'default))))
-                                         (setf (symbol-function sym) ,(second export))
-                                         (export sym))))))
-                 ,pkg))))))
+                                         (setf (symbol-value ,sym) ,(second export))
+                                         (export ,sym))))))
+                 (make-instance 'core-lisp-module :package ,pkg)))))))
 
 (defmacro import (m &rest args)
   `(macrolet ((vernacular/cl:defmacro (name args &body body)
