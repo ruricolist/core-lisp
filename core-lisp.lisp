@@ -211,8 +211,8 @@
 
 (cl:defun symbol-function (var &optional env)
   (cl:symbol-function
-   (or (get-alias var '%function-aliases% env)
-       var)))
+   (cl:or (get-alias var '%function-aliases% env)
+          var)))
 
 (cl:defun macro-function (var &optional env)
   (cl:if (cl:symbolp var)
