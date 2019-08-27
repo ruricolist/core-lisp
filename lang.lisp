@@ -81,7 +81,7 @@
          ,@body
          (setq vernacular:*module*
                (cl:let* ((,source ,vernacular:*source*)
-                         (,pkg (vernacular:ensure-file-package ,source))
+                         (,pkg (vernacular:intern-file-package ,source))
                          (*package* ,pkg))
                  ,@(loop for export in exports
                          collect (etypecase export
