@@ -29,14 +29,15 @@
                                   :package package))))
 
 (cl:defclass core-lisp-module ()
-  ((package :initarg :package :type package)))
+  ((package :initarg :package :type package)
+   (default-export :initarg :default-export)))
 
 (defun find-external-symbol (name package)
   (setf name (string name))
   (or (serapeum:find-external-symbol name package)
       (cl:error "No symbol named ~a exported from ~s." name package)))
 
-(serapeum:defmethods core-lisp-module (self package)
+(serapeum:defmethods core-lisp-module (self package default-export)
   (:method vernacular:module-exports (self)
     (serapeum:package-exports package))
   (:method vernacular:module-ref (self name)
@@ -47,6 +48,8 @@
                       sym)))
       ;; Should we shadow symbol-value?
       (symbol-value alias)))
+  (:method vernacular:module-ref-ns (self (name (cl:eql 'vernacular:default)) (ns cl:null))
+    default-export)
   (:method vernacular:module-ref-ns (self name (ns (cl:eql 'cl:function)))
     (symbol-function (find-external-symbol name package)))
   (:method vernacular:module-ref-ns (self name (ns (cl:eql 'cl:macro-function)))
@@ -64,17 +67,16 @@
                     if (and (consp form) (eql (first form) :export-default))
                       return form))
             (meta-forms
-              (append export-forms (list export-default-form)))
+              (if export-default-form
+                  (cons export-default-form export-forms)
+                  export-forms))
             (body
               (remove-if (lambda (form)
                            (member form meta-forms))
                          body))
             (exports
-              (append
-               (loop for form in export-forms
-                     append (rest form))
-               (and export-default-form
-                    `((:default ,(second export-default-form)))))))
+              (loop for form in export-forms
+                    append (rest form))))
     (assert (not (and export-forms export-default-form)))
     (with-unique-names (source pkg)
       `(progn
@@ -84,20 +86,19 @@
                          (,pkg (vernacular:intern-file-package ,source))
                          (*package* ,pkg))
                  ,@(loop for export in exports
-                         collect (etypecase export
-                                   (cl:symbol `(export ',export))
-                                   ((cl:cons (cl:eql function)
-                                             (cl:cons symbol cl:null))
-                                    `(export ',(second export)))
-                                   ((cl:cons (cl:eql macro-function)
-                                             (cl:cons symbol cl:null))
-                                    `(export ',(second export)))
-                                   ((cl:cons (cl:eql :default) (cl:cons cl:t cl:null))
-                                    (with-unique-names (sym)
-                                      `(cl:let ((,sym (intern ,(string 'default))))
-                                         (setf (symbol-value ,sym) ,(second export))
-                                         (export ,sym))))))
-                 (make-instance 'core-lisp-module :package ,pkg)))))))
+                         collect (trivia:ematch export
+                                   ((type symbol)
+                                    `(export ',export))
+                                   ((cl:list 'function (cl:and symbol (type symbol)))
+                                    `(export ',symbol))
+                                   ((cl:list 'macro-function (cl:and symbol (type symbol)))
+                                    `(export ',symbol))))
+                 (make-instance 'core-lisp-module
+                                :package ,pkg
+                                ,@(and export-default-form
+                                       `(:default-export
+                                         (progn
+                                           ,@(rest export-default-form)))))))))))
 
 (defmacro import (m &rest args)
   `(macrolet ((vernacular/cl:defmacro (name args &body body)
