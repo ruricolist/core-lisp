@@ -39,7 +39,12 @@
 
 (serapeum:defmethods core-lisp-module (self package default-export)
   (:method vernacular:module-exports (self)
-    (serapeum:package-exports package))
+    (append (vernacular:module-exports package)
+            (serapeum:collecting
+              (do-external-symbols (sym package)
+                (alexandria:when-let (alias (get-alias sym '%aliases% nil))
+                  (when (boundp alias)
+                    (collect sym)))))))
   (:method vernacular:module-ref (self name)
     (vernacular:module-ref-ns self name nil))
   (:method vernacular:module-ref-ns (self name (ns cl:null))
