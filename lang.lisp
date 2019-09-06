@@ -43,10 +43,11 @@
   (:method vernacular:module-ref (self name)
     (vernacular:module-ref-ns self name nil))
   (:method vernacular:module-ref-ns (self name (ns cl:null))
+    ;; This is more complicated than `symbol-value' because of global
+    ;; lexicals.
     (let* ((sym (find-external-symbol name package))
            (alias (or (get-alias sym '%aliases% nil)
                       sym)))
-      ;; Should we shadow symbol-value?
       (symbol-value alias)))
   (:method vernacular:module-ref-ns (self (name (cl:eql 'vernacular:default)) (ns cl:null))
     default-export)
