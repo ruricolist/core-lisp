@@ -20,3 +20,6 @@
 
 (test rfn
   (is (equal '(1 2 3 4 5) (iota-h 1 5))))
+
+(test abstract-class
+  (finishes (cl:eval '(defclass <expr> () () (:abstractp t)))))
