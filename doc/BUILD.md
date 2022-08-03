@@ -23,5 +23,5 @@ The procedure is as follows:
 - `git clone` Core Lisp into ~/common-lisp/core-lisp.
 - In that directory, run "sbcl".
 - `(asdf:load-system :core-lisp)`
-- `(sb-ext:save-lisp-and-die "islisp" :executable t :save-runtime-options t)`
+- `(sb-ext:save-lisp-and-die "islisp" :executable t :save-runtime-options t :compression t)`
 - Once back at the shell, move islisp somewhere on your path like *~/bin*.
