@@ -38,7 +38,12 @@ OTHER DEALINGS IN THE SOFTWARE.
   :depends-on (:vernacular :global-vars :alexandria :named-readtables :trivia))
 
 (asdf:defsystem #:core-lisp/test
-  :depends-on (:core-lisp :overlord :uiop :fiveam)
+  :depends-on ("core-lisp"
+               "overlord"
+               "uiop"
+               "fiveam"
+               "overlord/tests"
+               "vernacular/tests")
   :perform (asdf:test-op (o c) (uiop:symbol-call :core-lisp/test :run-tests))
   :components
   ((:file "test")))
