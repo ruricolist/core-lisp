@@ -406,7 +406,7 @@
 (cl:defun expand-defclass (w class-name superclasses options &optional (conditionp cl:nil))
   ;; TODO Actually implement abstract classes.
   (when (cl:find :abstractp options :key #'cl:car)
-    (setf options (cl:remove :abstractp options :key #'cl:car)))
+    (cl:setf options (cl:remove :abstractp options :key #'cl:car)))
   (unless (cl:and (cl:symbolp class-name)
                   (cl:listp superclasses)
                   (every #'cl:symbolp superclasses)
