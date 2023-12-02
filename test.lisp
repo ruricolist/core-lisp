@@ -73,3 +73,18 @@
   (v:require-as nil #1="tests/phasing.lsp")
   (with-imports* (m :from #1# :binding (#'inc-count))
     (is (= (inc-count) 0))))
+
+;;; Import as package.
+
+(test import-as-package
+  (let ((pkg :vernacular-test/as-package))
+    (if (cl:find-package pkg)
+        (cl:delete-package pkg))
+    (eval `(vernacular:import-as-package ,pkg
+             :from "tests/exports.lsp"
+             :binding (x #'y (macro-function z))))
+    (is-true (cl:find-package pkg))
+    (is (equal '(:var :fn :macro)
+               (eval `(list ,(find-symbol (string 'x) pkg)
+                            (,(find-symbol (string 'y) pkg))
+                            (,(find-symbol (string 'z) pkg))))))))
